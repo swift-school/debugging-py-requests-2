@@ -43,7 +43,6 @@ from .exceptions import (
     ConnectionError,
     ContentDecodingError,
     HTTPError,
-    InvalidJSONError,
     InvalidURL,
 )
 from .exceptions import JSONDecodeError as RequestsJSONDecodeError
@@ -506,10 +505,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             # provides this natively, but Python 3 gives a Unicode string.
             content_type = "application/json"
 
-            try:
-                body = complexjson.dumps(json, allow_nan=False)
-            except ValueError as ve:
-                raise InvalidJSONError(ve, request=self)
+            body = complexjson.dumps(json)
 
             if not isinstance(body, bytes):
                 body = body.encode("utf-8")
