@@ -11,6 +11,7 @@ import tempfile
 import threading
 import warnings
 from unittest import mock
+from math import isnan
 
 import pytest
 import urllib3
@@ -2839,8 +2840,9 @@ class TestPreparingURLs:
 
     def test_post_json_nan(self, httpbin):
         data = {"foo": float("nan")}
-        with pytest.raises(requests.exceptions.InvalidJSONError):
-            requests.post(httpbin("post"), json=data)
+        r = requests.post(httpbin('post'), json=data)
+        data = json.loads(r.json()['data'])
+        assert not isnan(data['foo'])
 
     def test_json_decode_compatibility(self, httpbin):
         r = requests.get(httpbin("bytes/20"))
